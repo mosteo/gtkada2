@@ -1,0 +1,50 @@
+--  Modified stock gtkada library project that recompiles sources, for use with non-debian-default gnat compiler
+--
+--  with "gtkada";
+--  project Example is
+--     for Object_Dir use "obj";
+--     for Exec_Dir use ".";
+--     for Main use ("example");
+--  end Example;
+
+project gtkada2 is
+   --  for Library_Name use "gtkada";
+   --  for Library_Kind use "dynamic";
+   --  for Library_Dir use "/usr/lib/x86_64-linux-gnu/";
+   for Source_Dirs use ("/usr/share/ada/adainclude/gtkada");
+   for Object_Dir use "obj";
+   --  for Library_ALI_Dir use "/usr/lib/x86_64-linux-gnu/ada/adalib/gtkada";
+   --  for Externally_Built use "True";
+
+   for Languages  use ("Ada", "C");
+
+   package Compiler is
+      for Default_Switches ("Ada") use ("-g",
+                                        "-O2",
+                                        "-gnato", -- Standard Ada overflow
+                                        "-fstack-check",
+                                        "-gnata", -- All assertions
+                                        "-gnateE", -- Extra range check info in exceptions
+                                        "-gnatf", -- full errors
+                                        "-gnatVa", -- all validity checks (expensive, use Vd for default)
+                                        "-fPIC",
+                                        "");
+      for Default_Switches ("C") use ("-g", "-Wall", "-O2", "-fPIC",
+                                      "-I/usr/include/atk-1.0",
+                                      "-I/usr/include/glib-2.0",
+                                      "-I/usr/include/gtk-2.0",
+                                      "-I/usr/include/gdk-pixbuf-2.0",
+                                      "-I/usr/lib/x86_64-linux-gnu/glib-2.0/include",
+                                      "-I/usr/lib/x86_64-linux-gnu/gtk-2.0/include",
+                                      "-I/usr/include/cairo",
+                                      "-I/usr/include/pango-1.0");
+   end Compiler;
+
+   package Linker is
+      for Linker_Options use ("-lgmodule-2.0", "-lgtk-x11-2.0", "-lgdk-x11-2.0",
+                              "-latk-1.0", "-lgio-2.0", "-lpangoft2-1.0",
+                              "-lpangocairo-1.0", "-lgdk_pixbuf-2.0", "-lcairo",
+                              "-lfontconfig", "-lfreetype", "-lpango-1.0",
+                              "-lgobject-2.0", "-lglib-2.0", "-lX11", "-lm");
+   end Linker;
+end gtkada2;
